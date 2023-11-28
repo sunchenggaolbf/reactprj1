@@ -1,0 +1,45 @@
+<html>
+    <body>
+        <script>
+
+        const path = ['a','b','C','D','e','f','G','h','I','j'];
+
+        const test = {...path.reduce((acc, point, index) => {
+            acc[`path_${index}`] = {
+              position: point,
+              renderer: `path_${index}`,
+            };
+            return acc;
+          }, {})};
+
+        alert(JSON.stringify(test));
+
+        const test2 = {...path};
+        alert(JSON.stringify(test2));
+
+        //通常累加是合并字符串，或者加数字。但是这个例子。是数组累加。返回数字组地址名字。
+        const test3 = path.reduce((acc, point, index) => {
+            acc[`path_${index}`] = {
+              position: point,
+              renderer: `path_${index}`,
+            };
+            return acc;
+          }, {});
+
+        alert(JSON.stringify(test3));
+
+        </script>
+    </body>
+</html>
+
+<!-- {
+"path_0":{"position":"a","renderer":"path_0"},
+"path_1":{"position":"b","renderer":"path_1"},
+"path_2":{"position":"C","renderer":"path_2"},
+"path_3":{"position":"D","renderer":"path_3"},
+"path_4":{"position":"e","renderer":"path_4"},
+"path_5":{"position":"f","renderer":"path_5"},
+"path_6":{"position":"G","renderer":"path_6"},
+"path_7":{"position":"h","renderer":"path_7"},
+"path_8":{"position":"I","renderer":"path_8"},
+"path_9":{"position":"j","renderer":"path_9"}} -->
