@@ -98,12 +98,25 @@ const App = () => {
   const handleMouseMove = (e) => {
     if (e.buttons === 1) {
       const newPosition = { x: e.clientX, y: e.clientY };
-
+  
       // 使用线性插值添加更多的点
-      if (positions[positions.length - 1]) {
-        const interpolatedPositions = interpolatePoints(positions[positions.length - 1], newPosition, 10);
-        setPositions([...positions, ...interpolatedPositions]);
-      }else{
+      if (positions.length > 0) {
+        const lastPosition = positions[positions.length - 1];
+        const distance = Math.sqrt(
+          Math.pow(newPosition.x - lastPosition.x, 2) +
+          Math.pow(newPosition.y - lastPosition.y, 2)
+        );
+  
+        const threshold = 20; // 距离阈值，可以根据需要调整
+  
+        if (distance > threshold) {
+          console.log(distance);
+          const interpolatedPositions = interpolatePoints(lastPosition, newPosition, 10);
+          setPositions([...positions, ...interpolatedPositions]);
+        } else {
+          setPositions([...positions, newPosition]);
+        }
+      } else {
         setPositions([...positions, newPosition]);
       }
     }
