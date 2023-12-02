@@ -7,7 +7,7 @@ const App = () => {
   const [currentPosition, setCurrentPosition] = useState({ x: 50, y: 50 });
   const [carIndex, setCarIndex] = useState(0);
   const [mouseUpFlg, setMouseUpFlg] = useState(false);
-  const [rotation,setRotation] = useState(0);
+  const [rotation, setRotation] = useState(0);
 
   const BlockRenderer = ({ position }) => (
     <div
@@ -25,20 +25,22 @@ const App = () => {
     />
   );
 
-  const CarRenderer = ({ position, rotation }) => (
-    <img
-      src={carImage}
-      alt="Car"
-      style={{
-        position: 'absolute',
-        width: '60px',
-        height: '60px',
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-        transform: `rotate(${rotation}deg)`, // 添加旋转样式
-      }}
-    />
-  );
+  const CarRenderer = ({ position, rotation }) => {
+    return (
+      <img
+        src={carImage}
+        alt="Car"
+        style={{
+          position: 'absolute',
+          width: '60px',
+          height: '60px',
+          left: `${position.x}px`,
+          top: `${position.y}px`,
+          transform: `rotate(${rotation}deg)`, // 添加旋转样式
+        }}
+      />
+    )
+  };
 
   const LineRenderer = ({ positions }) => (
     <>
@@ -49,8 +51,8 @@ const App = () => {
             position: 'absolute',
             width: '20px',
             height: '20px',
-            backgroundColor: 'green', // 将此处更改为你想要的颜色或图像
-            borderRadius: '50%', // 使其看起来像圆形
+            backgroundColor: 'green',
+            borderRadius: '50%',
             left: `${pos.x}px`,
             top: `${pos.y}px`,
           }}
@@ -62,21 +64,26 @@ const App = () => {
   const updateGame = (entities) => {
     const carPath = positions;
     const nextCarPosition = carPath[carIndex];
-  
+    const compareIndex = carIndex + 10;
+
     if (nextCarPosition && mouseUpFlg) {
       // 更新小车位置
-      setCurrentPosition({ x: nextCarPosition.x, y: nextCarPosition.y - 30 });
-  
+      setCurrentPosition({ x: nextCarPosition.x, y: nextCarPosition.y - 45 });
+
       // 计算小车的旋转角度
-      const deltaX = nextCarPosition.x - currentPosition.x;
-      const deltaY = nextCarPosition.y - currentPosition.y;
-      const rotation = Math.atan2(deltaY, deltaX) * (180 / Math.PI);
-  
+      if (compareIndex < carPath.length) {
+        const comparePosition = carPath[compareIndex];
+        const deltaX = comparePosition.x - currentPosition.x;
+        const deltaY = comparePosition.y - currentPosition.y;
+        const rotation = Math.atan2(deltaY, deltaX) * (180 / Math.PI) - 90;
+        setRotation(rotation);
+      }
+
       // 每次移动时更新 carIndex 和 rotation
       setCarIndex(carIndex + 1);
-      setRotation(rotation);
+
     }
-  
+
     return {
       block: {
         position: currentPosition,
@@ -91,8 +98,30 @@ const App = () => {
   const handleMouseMove = (e) => {
     if (e.buttons === 1) {
       const newPosition = { x: e.clientX, y: e.clientY };
-      setPositions([...positions, newPosition]);
+
+      // 使用线性插值添加更多的点
+      if (positions[positions.length - 1]) {
+        const interpolatedPositions = interpolatePoints(positions[positions.length - 1], newPosition, 10);
+        setPositions([...positions, ...interpolatedPositions]);
+      }else{
+        setPositions([...positions, newPosition]);
+      }
     }
+  };
+
+  const interpolatePoints = (start, end, count) => {
+
+    const deltaX = (end.x - start.x) / count;
+    const deltaY = (end.y - start.y) / count;
+
+    const interpolatedPoints = [];
+    for (let i = 1; i <= count; i++) {
+      const x = start.x + i * deltaX;
+      const y = start.y + i * deltaY;
+      interpolatedPoints.push({ x, y });
+    }
+
+    return interpolatedPoints;
   };
 
   const handleMouseDown = (e) => {
@@ -112,7 +141,7 @@ const App = () => {
         style={{ width: '100vw', height: '100vh' }}
         systems={[updateGame]}
         entities={{
-          block: { position: currentPosition, carIndex:carIndex, renderer: <CarRenderer position={currentPosition} /> },
+          block: { position: currentPosition, carIndex: carIndex, renderer: <CarRenderer position={currentPosition} /> },
           line: { positions, renderer: <LineRenderer positions={positions} /> },
         }}
       />
