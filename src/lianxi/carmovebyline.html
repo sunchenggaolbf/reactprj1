@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>画线示例</title>
+    <style>
+        canvas {
+            border: 1px solid #000;
+            cursor: crosshair;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas id="myCanvas" width="800" height="600"></canvas>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const canvas = document.getElementById('myCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.strokeStyle = 'blue';
+            ctx.lineWidth = 2;
+            let isDrawing = false;
+
+            function startDrawing(e) {
+                isDrawing = true;
+                ctx.beginPath();
+                ctx.moveTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+            }
+
+            function drawLine(e) {
+                if (!isDrawing) return;
+                ctx.lineTo(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+                ctx.stroke();
+            }
+
+            function stopDrawing(e) {
+                if (!isDrawing) return;
+                isDrawing = false;
+                ctx.closePath();
+
+                // 获取终点坐标
+                const endPoint = {
+                    x: e.clientX - canvas.offsetLeft,
+                    y: e.clientY - canvas.offsetTop
+                };
+
+                // 创建小车
+                const car = new Image();
+                car.src = './resource/pictures/car.png'; // 替换成你的小车图片路径
+                car.onload = function () {
+                    // 移动小车的动画效果
+                    animateCar(ctx, car, endPoint);
+                };
+            }
+
+            function animateCar(context, car, endPoint) {
+                const carWidth = 50; // 替换成你的小车图片宽度
+                const carHeight = 30; // 替换成你的小车图片高度
+                const framesPerSecond = 60;
+                const distancePerFrame = 2;
+
+                let currentX = ctx.canvas.width / 2;
+                let currentY = ctx.canvas.height / 2;
+
+                const totalFrames = Math.sqrt(Math.pow(endPoint.x - currentX, 2) + Math.pow(endPoint.y - currentY, 2)) / distancePerFrame;
+
+                const moveCar = setInterval(function () {
+                    if (currentX === endPoint.x && currentY === endPoint.y) {
+                        clearInterval(moveCar);
+                    } else {
+                        const deltaX = (endPoint.x - currentX) / totalFrames;
+                        const deltaY = (endPoint.y - currentY) / totalFrames;
+
+                        currentX += deltaX;
+                        currentY += deltaY;
+
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                        context.drawImage(car, currentX - carWidth / 2, currentY - carHeight / 2, carWidth, carHeight);
+                    }
+                }, 1000 / framesPerSecond);
+            }
+
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', drawLine);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseout', stopDrawing);
+        });
+    </script>
+</body>
+
+</html>
