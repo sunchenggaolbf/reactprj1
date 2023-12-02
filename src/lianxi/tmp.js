@@ -5,7 +5,6 @@ const App = () => {
   const [positions, setPositions] = useState([{ x: 50, y: 50 }]);
   const [currentPosition, setCurrentPosition] = useState({ x: 50, y: 50 });
   const [carIndex, setCarIndex] = useState(0);
-  const [mouseUpFlg, setMouseUpFlg] = useState(false);
 
   const BlockRenderer = ({ position }) => (
     <div
@@ -42,22 +41,23 @@ const App = () => {
   );
 
   const updateGame = (entities) => {
-    // 获取小车路径和当前位置
-    const carPath = positions;
-    const nextCarPosition = carPath[carIndex];
+    let carPath = entities.line.positions;
+    let carPathIndex = entities.block.moveIndex;
+    let nextCarPosition = carPath[carPathIndex];
+  
+    if (nextCarPosition) {
+      //entity.position.x = nextPosition.x;
+      //entity.position.y = nextPosition.y;
 
-    if (nextCarPosition && mouseUpFlg) {
-      // 更新小车位置
-      setCurrentPosition({ x: nextCarPosition.x, y: nextCarPosition.y-30 });
+      // 每次移动时更新 moveIndex
+      setCarIndex(++carIndex);
 
-      // 每次移动时更新 carIndex
-      setCarIndex(carIndex + 1);
-      console.log(carIndex);
-
+      // 设置新的当前位置
+      setCurrentPosition({ x: nextCarPosition.x, y: nextCarPosition.y });
     }
 
     return {
-      block: { position: currentPosition, carIndex:carIndex, renderer: <BlockRenderer position={currentPosition} /> },
+      block: { position: currentPosition, moveIndex: carPathIndex, renderer: <BlockRenderer position={currentPosition} /> },
       line: { positions, renderer: <LineRenderer positions={positions} /> },
     };
   };
@@ -66,18 +66,16 @@ const App = () => {
     if (e.buttons === 1) {
       const newPosition = { x: e.clientX, y: e.clientY };
       setPositions([...positions, newPosition]);
-      //setCurrentPosition(newPosition);
+      setCurrentPosition(newPosition);
     }
   };
 
   const handleMouseDown = (e) => {
-    setMouseUpFlg(false);
     setPositions([]);
   }
 
   const handleMouseUp = (e) => {
-    // 在鼠标抬起时可能进行一些操作
-    setMouseUpFlg(true);
+    //alert(123);
   }
 
   return (
@@ -86,7 +84,7 @@ const App = () => {
         style={{ width: '100vw', height: '100vh' }}
         systems={[updateGame]}
         entities={{
-          block: { position: currentPosition, carIndex:carIndex, renderer: <BlockRenderer position={currentPosition} /> },
+          block: { position: currentPosition, moveIndex: carIndex, renderer: <BlockRenderer position={currentPosition} /> },
           line: { positions, renderer: <LineRenderer positions={positions} /> },
         }}
       />
