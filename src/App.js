@@ -9,22 +9,6 @@ const App = () => {
   const [mouseUpFlg, setMouseUpFlg] = useState(false);
   const [rotation, setRotation] = useState(0);
 
-  const BlockRenderer = ({ position }) => (
-    <div
-      style={{
-        position: 'absolute',
-        width: '30px',
-        height: '30px',
-        backgroundColor: 'blue',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        left: `${position.x}px`,
-        top: `${position.y}px`,
-      }}
-    />
-  );
-
   const CarRenderer = ({ position, rotation }) => {
     return (
       <img
@@ -42,7 +26,7 @@ const App = () => {
     )
   };
 
-  const LineRenderer = ({ positions }) => (
+  const Path = ({ positions }) => (
     <>
       {positions.map((pos, index) => (
         <div
@@ -91,7 +75,7 @@ const App = () => {
         rotation: rotation, // 传递旋转角度
         renderer: <CarRenderer position={currentPosition} rotation={rotation} />,
       },
-      line: { positions, renderer: <LineRenderer positions={positions} /> },
+      line: { positions, renderer: <Path positions={positions} /> },
     };
   };
 
@@ -155,7 +139,7 @@ const App = () => {
         systems={[updateGame]}
         entities={{
           block: { position: currentPosition, carIndex: carIndex, renderer: <CarRenderer position={currentPosition} /> },
-          line: { positions, renderer: <LineRenderer positions={positions} /> },
+          line: { positions, renderer: <Path positions={positions} /> },
         }}
       />
     </div>
