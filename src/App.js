@@ -44,8 +44,7 @@ const App = () => {
   );
 
   const systemRunPath = (entities) => {
-    const carPath = positions;
-    const nextCarPosition = carPath[carIndex];
+    const nextCarPosition = positions[carIndex];
     const compareIndex = carIndex + 10;
 
     if (nextCarPosition && mouseUpFlg) {
@@ -53,22 +52,21 @@ const App = () => {
       setCurrentPosition({ x: nextCarPosition.x, y: nextCarPosition.y - 45 });
 
       // 计算小车的旋转角度
-      if (compareIndex < carPath.length) {
-        const comparePosition = carPath[compareIndex];
+      if (compareIndex < positions.length) {
+        const comparePosition = positions[compareIndex];
         const deltaX = comparePosition.x - currentPosition.x;
         const deltaY = comparePosition.y - currentPosition.y;
         const rotation = Math.atan2(deltaY, deltaX) * (180 / Math.PI) - 90;
         setRotation(rotation);
       }
 
-      // 每次移动时更新 carIndex 和 rotation
       setCarIndex(carIndex + 1);
     }
 
     return {
       Car: {
         position: currentPosition,
-        rotation: rotation, // 传递旋转角度
+        rotation: rotation,
         renderer: <Car />,
       },
       Path: { positions, renderer: <Path /> },
@@ -89,7 +87,6 @@ const App = () => {
   }
 
   const handleMouseUp = (e) => {
-    // 在鼠标抬起时可能进行一些操作
     setMouseUpFlg(true);
   }
 
