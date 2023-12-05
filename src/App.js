@@ -9,22 +9,20 @@ const App = () => {
   const [mouseUpFlg, setMouseUpFlg] = useState(false);
   const [rotation, setRotation] = useState(0);
 
-  const CarRenderer = ({ position, rotation }) => {
-    return (
-      <img
-        src={carImage}
-        alt="Car"
-        style={{
-          position: 'absolute',
-          width: '60px',
-          height: '60px',
-          left: `${position.x}px`,
-          top: `${position.y}px`,
-          transform: `rotate(${rotation}deg)`, // 添加旋转样式
-        }}
-      />
-    )
-  };
+  const Car = ({ position, rotation }) => (
+    <img
+      src={carImage}
+      alt="Car"
+      style={{
+        position: 'absolute',
+        width: '60px',
+        height: '60px',
+        left: `${position.x}px`,
+        top: `${position.y}px`,
+        transform: `rotate(${rotation}deg)`, // 添加旋转样式
+      }}
+    />
+  );
 
   const Path = ({ positions }) => (
     <>
@@ -45,7 +43,7 @@ const App = () => {
     </>
   );
 
-  const updateGame = (entities) => {
+  const systemRunPath = (entities) => {
     const carPath = positions;
     const nextCarPosition = carPath[carIndex];
     const compareIndex = carIndex + 10;
@@ -65,24 +63,22 @@ const App = () => {
 
       // 每次移动时更新 carIndex 和 rotation
       setCarIndex(carIndex + 1);
-
     }
 
     return {
       block: {
         position: currentPosition,
-        carIndex: carIndex,
         rotation: rotation, // 传递旋转角度
-        renderer: <CarRenderer position={currentPosition} rotation={rotation} />,
+        renderer: <Car />,
       },
-      line: { positions, renderer: <Path positions={positions} /> },
+      line: { positions, renderer: <Path /> },
     };
   };
 
   const handleMouseMove = (e) => {
     if (e.buttons === 1) {
       const newPosition = { x: e.clientX, y: e.clientY };
-  
+
       // 使用线性插值添加更多的点
       if (positions.length > 0) {
         const lastPosition = positions[positions.length - 1];
@@ -90,9 +86,9 @@ const App = () => {
           Math.pow(newPosition.x - lastPosition.x, 2) +
           Math.pow(newPosition.y - lastPosition.y, 2)
         );
-  
+
         const threshold = 20; // 距离阈值，可以根据需要调整
-  
+
         if (distance > threshold) {
           console.log(distance);
           const interpolatedPositions = interpolatePoints(lastPosition, newPosition, 10);
@@ -136,10 +132,13 @@ const App = () => {
     <div onMouseMove={handleMouseMove} onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
       <GameEngine
         style={{ width: '100vw', height: '100vh' }}
-        systems={[updateGame]}
+        systems={[systemRunPath]}
         entities={{
-          block: { position: currentPosition, carIndex: carIndex, renderer: <CarRenderer position={currentPosition} /> },
-          line: { positions, renderer: <Path positions={positions} /> },
+          block: {
+            position: currentPosition,
+            renderer: <Car />
+          },
+          line: { positions, renderer: <Path/> },
         }}
       />
     </div>
