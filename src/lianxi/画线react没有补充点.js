@@ -66,12 +66,12 @@ const App = () => {
     }
 
     return {
-      Car: {
+      block: {
         position: currentPosition,
         rotation: rotation, // 传递旋转角度
         renderer: <Car />,
       },
-      Path: { positions, renderer: <Path /> },
+      line: { positions, renderer: <Path /> },
     };
   };
 
@@ -99,11 +99,11 @@ const App = () => {
         style={{ width: '100vw', height: '100vh' }}
         systems={[systemRunPath]}
         entities={{
-          Car: {
+          block: {
             position: currentPosition,
             renderer: <Car />
           },
-          Path: { positions, renderer: <Path/> },
+          line: { positions, renderer: <Path/> },
         }}
       />
     </div>

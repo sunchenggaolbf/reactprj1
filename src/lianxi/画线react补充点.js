@@ -66,20 +66,55 @@ const App = () => {
     }
 
     return {
-      Car: {
+      block: {
         position: currentPosition,
         rotation: rotation, // 传递旋转角度
         renderer: <Car />,
       },
-      Path: { positions, renderer: <Path /> },
+      line: { positions, renderer: <Path /> },
     };
   };
 
   const handleMouseMove = (e) => {
     if (e.buttons === 1) {
       const newPosition = { x: e.clientX, y: e.clientY };
-      setPositions([...positions, newPosition]);
+
+      // 使用线性插值添加更多的点
+      if (positions.length > 0) {
+        const lastPosition = positions[positions.length - 1];
+        const distance = Math.sqrt(
+          Math.pow(newPosition.x - lastPosition.x, 2) +
+          Math.pow(newPosition.y - lastPosition.y, 2)
+        );
+
+        const threshold = 20; // 距离阈值，可以根据需要调整
+
+        if (distance > threshold) {
+          console.log(distance);
+          const interpolatedPositions = interpolatePoints(lastPosition, newPosition, 10);
+          setPositions([...positions, ...interpolatedPositions]);
+        } else {
+          setPositions([...positions, newPosition]);
+        }
+      } else {
+        setPositions([...positions, newPosition]);
+      }
     }
+  };
+
+  const interpolatePoints = (start, end, count) => {
+
+    const deltaX = (end.x - start.x) / count;
+    const deltaY = (end.y - start.y) / count;
+
+    const interpolatedPoints = [];
+    for (let i = 1; i <= count; i++) {
+      const x = start.x + i * deltaX;
+      const y = start.y + i * deltaY;
+      interpolatedPoints.push({ x, y });
+    }
+
+    return interpolatedPoints;
   };
 
   const handleMouseDown = (e) => {
@@ -99,11 +134,11 @@ const App = () => {
         style={{ width: '100vw', height: '100vh' }}
         systems={[systemRunPath]}
         entities={{
-          Car: {
+          block: {
             position: currentPosition,
             renderer: <Car />
           },
-          Path: { positions, renderer: <Path/> },
+          line: { positions, renderer: <Path/> },
         }}
       />
     </div>
