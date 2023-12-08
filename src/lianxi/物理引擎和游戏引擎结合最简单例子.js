@@ -4,7 +4,6 @@ import Matter from "matter-js";
 
 const App = () => {
   const [entities, setEntities] = useState(null);
-  const [path, setPath] = useState([]);
 
   useEffect(() => {
     const engine = Matter.Engine.create({ enableSleeping: false });
@@ -39,27 +38,7 @@ const App = () => {
     );
   };
 
-  const PathPoint = (props) => {
-    const { body,key } = props;
-    const { x, y } = body.position;
-    return (
-      <div
-        key={key}
-        style={{
-          position: "absolute",
-          left: `${x}px`,
-          top: `${y}px`,
-          width: '30px',
-          height: '30px',
-          backgroundColor: "red",
-          borderRadius: 30 / 2,
-        }}
-      />
-    );
-  };
-
-  // 碰撞等处理
-  const Systemphysics = (entitiesx, {time}) => {
+  const SystemPath = (entitiesNotUse, {time}) => {
 
     if (!entities || !entities.physics) {
       return entities;
@@ -72,29 +51,10 @@ const App = () => {
     return entities;
   };
 
-    // 路径生成等处理,包括鼠标各种操作
-    const SystemPath = (entitiesx, {time}) => {
-
-      if (!entities || !entities.physics) {
-        return entities;
-      }
-
-      const pathPoint = Matter.Bodies.circle(100, 100, 30, { restitution: 0.5 });
-      setPath([...path, { body: pathPoint, key: path.length.toString(), renderer: <PathPoint /> }]);
-      const updatedEntities = {
-        ...entities,
-        path: path,
-      };
-
-      setEntities(updatedEntities);
-  
-      return entities;
-    };
-
   return (
       <GameEngine
         style={{ width: '100vw', height: '100vh' }}
-        systems={[Systemphysics, SystemPath]}
+        systems={[SystemPath]}
         entities={entities}
       />
   );

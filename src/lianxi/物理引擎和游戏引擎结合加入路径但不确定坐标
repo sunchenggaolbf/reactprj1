@@ -59,7 +59,7 @@ const App = () => {
   };
 
   // 碰撞等处理
-  const Systemphysics = (entitiesx, {time}) => {
+  const Systemphysics = (entitiesNotUse, {time}) => {
 
     if (!entities || !entities.physics) {
       return entities;
@@ -73,7 +73,7 @@ const App = () => {
   };
 
     // 路径生成等处理,包括鼠标各种操作
-    const SystemPath = (entitiesx, {time}) => {
+    const SystemPath = (entitiesNotUse, {time}) => {
 
       if (!entities || !entities.physics) {
         return entities;
